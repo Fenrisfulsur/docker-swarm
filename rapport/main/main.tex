@@ -107,7 +107,43 @@ Docker, ou à minima le démon sur chacun des noeuds.
 
 \section{Interêt du clustering}
 
+L'utilisation du clustering fourni principalement 2 avantages considérables par rapport à
+l'utilisation de machines indépendantes.\newline
+
+Premièrement, la \emph{disponibilité}, l'application sera toujours accessible, car même si un des
+serveurs tombent en panne alors qu'il était en train d'exécuter une tâche, un autre peut prendre
+le relais. Le seul cas ou l'application pourraît être indisponible serait que tous les serveurs
+tombent en panne en même temps, ce qui est peu probable.\newline
+
+Ensuite, l'\emph{évolutivité}, si l'application grandit ou que son utilisation croît beaucoup
+il est très simple d'ajouter un ou plusieurs noeuds au cluster afin d'augmenter ses capacités,
+sans même stopper le service.
+
 \section{Pourquoi utiliser Docker Swarm ?}
+
+Docker Swarm présente plusieurs avantages :
+\begin{itemize}
+    \item \emph{Intégration à Docker} : si Docker est déjà la technologie utilisé pour un service,
+        il sera très de passer à du clustering.
+
+    \item \emph{Scalabilité} : il est très simple d'ajouter ou de retirer des noeuds afin d'ajuster
+        ce nombre à la charge du service.
+
+    \item \emph{Retour à l'état souhaité} : le manager du cluster fait toujours en sorte de faire
+        correspondre l'état actuel à celui demandé. Par exemple si le cluster utilise 10 clones
+        d'un conteneur afin de fournir le service et que 2 d'entre eux échouent, le manager va
+        recréer 2 clones afin de retourner à l'état demandé.
+
+    \item \emph{Réseau multi-hôtes} : un cluster peut utiliser des machines sur plusieurs réseaux
+        différents.
+
+    \item \emph{Équilibrage de charge automatique} : pour un service, l'équilibrage est automatique
+        entre les noeuds. Il est cependant possible d'utiliser un équilibreur de charge externe.
+    
+    \item \emph{Sécurité} : la communication entre chacun des noeuds est sécurisée en utilisant
+        du chiffrement et une authentification mutuelle avec TLS. On peut utilisé des certificats
+        auto-signés ou utiliser une autorité de certification personalisée.
+\end{itemize}
 
 \chapter{Installation}
 
