@@ -13,9 +13,10 @@ que l'on sera peut-être amené à manipuler dans le futur.
 \columnratio{0.6}
 \begin{paracol}{2}
 
-Docker est une plateforme open-source permettant de concevoir, tester et déployer rapidement des
-applications. Il utilise la notion de conteneurs qui, comme la virtualisation, permet d’isoler
-une application de la machine hôte tout en étant plus léger et plus simple à déployer.
+Docker est un outil open-source, sorti en 2013, permettant de concevoir, tester et déployer
+rapidement des applications. Il utilise la notion de conteneurs qui, comme la virtualisation,
+permet d’isoler une application de la machine hôte tout en étant plus léger et plus simple à
+déployer.
 
 \switchcolumn
 
@@ -24,8 +25,9 @@ une application de la machine hôte tout en étant plus léger et plus simple à
 \end{paracol}
 \jmp
 
-Docker étend les conteneurs LXC qui s’appuient sur les fonctionnalités du noyau pour l’isolation
-(namespaces, cgroups), en fournissant une API haut niveau, plus simple d’utilisation.\newline
+Docker étend les conteneurs \emph{LXC (Linux Container)} qui s’appuient sur les fonctionnalités du
+noyau pour l’isolation (namespaces, cgroups), en fournissant une API haut niveau, plus simple
+d’utilisation.\newline
 
 Comme on peut le voir sur la figure \ref{fig:diffvm}, la différence principale entre un conteneur 
 et une machine virtualisé est que dans le premier cas le système d'exploitation n'est pas émulé.
@@ -47,15 +49,58 @@ Cependant à la différence d'une machine virtuelle, ce n'est pas une isolation 
 si l'application est critique est nécessite un fort niveau d'isolation, mieux vaut utiliser une
 machine virtuelle.\newline
 
-Il existe également une bibliothèque d’images publics, le Docker Hub, permettant de créer
-facilement tous types de conteneurs.
+Il existe également une bibliothèque d’images publics, le \emph{Docker Hub}, permettant de
+récupérer et de créer des images pour facilement créer tous types de conteneurs.
 
 \subsection{Swarm}
 
+Docker Swarm est un outil d’orchestration permettant de créer et gérer des clusters de machines
+physiques ou virtuelles hébergeant une application. C’est un outil intégré à Docker depuis sa
+version 1.12.
+
+Contrairement à l'outil \emph{Docker Compose} qui permet de gérer plusieurs conteneurs sur une même
+machine hôte, \emph{Docker Swarm} peut gérer plusieurs machines différentes et des conteneurs sur
+différents hôtes.
+
+Un cluster est un ensemble de machines, physiques ou virtuelles, regroupés afin d'en faciliter la
+gestion et dépasser les capacités d'une seule machine.
+
+L’interêt principal d’un cluster Swarm est la haute disponibilité que cela procure pour
+l’application.
+
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.5\textwidth]{img/swarm}
-    \caption{Logo de Swarm}
+    \includegraphics[width=0.4\textwidth]{img/swarm}
+\end{figure}
+
+\section{Fonctionnement interne}
+
+Dans un cluster Swarm, les éléments du cluster sont appelés les \emph{nodes} (noeuds).
+Chaque noeud peut être soit un manager, soit un worker.
+
+Un \emph{manager} est une node qui s'occupe de la gestion des permissions, de l'attribution des
+tâches et de l'équilibrage de charge.
+
+Un \emph{worker} est une node qui effectue les tâches attribués par le manager.
+
+Il est possible pour un même noeud d’endosser les deux rôles simultanément.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/manager}
+\end{figure}
+
+Il doit y avoir également dans un cluster une node, plus précisement un manager, qui a le statut de
+\emph{leader}. Ce leader s'occupe de la gestion du cluster Swarm et des décisions d'orchestrations.
+
+Swarm est une technologie de clustering qui fonctionne avec agent. C'est via le démon
+\verb:dockerd: que les nodes communiquent en utilisant l'API de Docker. Il faut donc installer
+Docker, ou à minima le démon sur chacun des noeuds.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/swarm-network}
+    \caption{Schéma de fonctionnement d'un cluster Swarm}
 \end{figure}
 
 \chapter{Interêts}
@@ -66,17 +111,11 @@ facilement tous types de conteneurs.
 
 \chapter{Installation}
 
+\section{Linux}
+
+\section{Windows \& MacOS}
+
 \chapter{Utilisation}
-
-Un \verb:swarm: consiste en plusieurs nœuds docker qui
-s'exécute en mode swarm. Les nœuds docker peuvent avoir deux types: 
-\begin{itemize}
-    \item Un manager (\verb:manager:) s'occupe de la gestion de permissions et de l'attribution 
-        des tâches.
-    \item Un travailleur (\verb:worker:) effectue les tâches que lui attribue le manager.
-\end{itemize}
-
-Il est possible pour un même nœuds d'endosser deux rôles simultanèment.
 
 \section{Commandes de bases}
 
@@ -102,7 +141,7 @@ docker-worker1 RUNNING 10.0.3.235, 172.17.0.1
 docker-worker2 RUNNING 10.0.3.203, 172.17.0.1
 \end{bash} 
 \begin{center}
-    \emph{les adresses \verb:172.17.0.1: correspondent à l'interface docker0}
+    \emph{Les adresses \verb:172.17.0.1: correspondent à l'interface docker0}
 \end{center}
 
 \newpage
