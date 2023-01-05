@@ -95,6 +95,29 @@
             \end{tcbclipinterior}
         }
     }
+    \newtcblisting{#1WithOption}[1]
+    {
+        listing only, 
+        colback=backcolor, 
+        colframe=black!75, 
+        breakable,  
+        listing engine=minted,
+        drop fuzzy shadow = gray,
+        width=\textwidth, 
+        sharp corners,
+        left=6mm,
+        enhanced,
+        minted language=#1, 
+        minted style=#2, 
+        fonttitle=\normalsize,
+        overlay={
+            \begin{tcbclipinterior}
+            \fill[gray!20!white] (frame.south west)
+                rectangle ([xshift=5mm]frame.north west);
+            \end{tcbclipinterior}
+        },
+        ##1
+    }
 }
 
 % Define minted environnements
