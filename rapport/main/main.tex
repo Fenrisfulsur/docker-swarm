@@ -103,6 +103,28 @@ Docker, ou à minima le démon sur chacun des noeuds.
     \caption{Schéma de fonctionnement d'un cluster Swarm}
 \end{figure}
 
+\subsection{Raft Consensus algorithm}
+
+Lorsque Docker fonctionne en mode cluster avec Swarm, les managers utilise l'algorithme du
+\href{https://raft.github.io/}{\emph{Raft Consensus}} afin de garantir le fait qu'il partage le
+même état du cluster. C'est pour cela que parmi les managers, il y aura un noeud qui sera élu
+\emph{leader}.\newline
+
+Cette algorithme permet d'élire un leader afin que celui puisse notifier les autres quant aux
+changements d'états du cluster. Si le leader s'arrête l'algorithme est prévu pour un élire un
+nouveau de manière automatique. Cette algorithme a l'avantage d'être simple et efficace et il
+peut tolérer jusqu'à $(N - 1) / 2$ erreurs, N étant le nombre de noeuds du cluster.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/raft}
+    \caption{Schéma de fonctionnement de l'algorithme Raft Consensus}
+\end{figure}
+
+Afin de mieux comprendre le fonctionnement de cet algorithme, un page l'expliquant simplement
+est disponible au lien suivant : 
+\href{http://thesecretlivesofdata.com/raft/}{http://thesecretlivesofdata.com/raft/}.
+
 \chapter{Interêts}
 
 \section{Interêt du clustering}
@@ -290,11 +312,63 @@ Il est possible de se connecter sur l'une des interfaces web en allant par exemp
 
 \section{Performances}
 
+
+
 \section{Sécurité}
 
+En terme de sécurité Docker Swarm propose principalement deux fonctionnalités :\newline
+
+Premièrement, Docker possède un système de PKI (Public Key Infrastructure) intégré.
+Lors de la création du cluster (à la commande \verb:docker swarm init:), le noeud est
+alors déclaré comme manager. Ensuite le manager va généré une nouvelle autorité de 
+certification en utilisant le PKI, ce qui permettra ensuite de générer des certificats pour
+chacun des noeuds qui rejoindra le cluster.
+
+Ces certificats seront ensuite utilisé pour chiffrer et authentifier les communications
+entre les noeuds en utilisant TLS (Transport Layer Security). Si l'on souhaite on peut
+fournir à Swarm une autorité de certification externe plutôt que d'utiliser celle interne
+à Docker.\newline
+
+Ensuite, Swarm chiffre également par défaut les logs du Raft Consensus afin de protéger
+la configuration et les données d'éventuels attaquants. Les clés utilisés pour chiffrer les
+logs et pour utiliser TLS sont chargées dans la mémoire du noeud au démarrage ou au
+redémarrage. Cependant afin de protéger ces clés lorsque le service est éteint, Docker propose
+la fonctionnalité d'\verb:autolock:.
+
+Ce paramètre a pour effet de chiffrer le contenu des noeuds lorsque le service s'arrête, il
+faudra donc fournir une clé de déchiffrement au redémarrage du service. Cette clé est donné lors
+de la création du Swarm avec l'option \verb:autolock: ou bien si l'on active l'option sur un
+cluster existant.\newline
+
+Dans la pratique il faut utiliser les commandes suivantes pour activer la fonctionnalité :
+
+\begin{bashWithTitle}{À la création :}
+docker swarm init --autolock
+\end{bashWithTitle}
+
+\begin{bashWithTitle}{Sur un cluster existant :}
+docker swarm update --autolock=true
+\end{bashWithTitle}
+\newpage
+
+Ces commandes vont nous renvoyer une clé de la forme :
+\begin{bash}
+SWMKEY-1-WuYH/IX284+lRcXuoVf38viIDK3HJEKY13MIHX+tTt8    # Exemple
+\end{bash}
+
+Au redémarrage on pourra déverrouiller le cluster avec la commande suivante, en fournissant la clé
+précédente :
+\begin{bash}
+docker swarm unlock
+\end{bash}
+
+\emph{Source} : \href{https://docs.docker.com/engine/swarm/swarm\_manager\_locking/}{https://docs.docker.com/engine/swarm/swarm\_manager\_locking/}
+
 \section{Disponibilité}
+
 Si on arrête le conteneur lxc \verb:docker-worker1:, puis que l'on se connecte sur le
 conteneur du manager afin d'afficher l'état de l'essaim on obtient ceci:
+
 \begin{bash}
 docker service ps my_web
 ID           NAME         IMAGE        NODE           DESIRED STATE   
@@ -303,6 +377,7 @@ ID           NAME         IMAGE        NODE           DESIRED STATE
 wbh4bodsezqa  \_ my_web.2 nginx:latest docker-worker1 Shutdown      
 ou5pyyrpr6k1 my_web.3     nginx:latest docker-worker2 Running      
 \end{bash}
+
 On peut voir que le conteneur docker-worker2 à récupèrer la tâche du worker1 de manière
 autonome et transparente, ce qui veut dire qu'en cas de panne ou autre indisponibilité, 
 docker équilibre automatiquement la charge.
