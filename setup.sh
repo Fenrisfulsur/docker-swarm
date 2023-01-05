@@ -2,6 +2,16 @@ MANAGER="docker-manager"
 WORKER1="docker-worker1"
 WORKER2="docker-worker2"
 
+function wait_for_ip()
+{
+    ip="$(lxc-info -iH -n $1 | grep -Eo '10.0.3.[[:digit:]]*')"
+    while [ $? != 0 ]; do
+        sleep 1
+        ip="$(lxc-info -iH -n $1 | grep -Eo '10.0.3.[[:digit:]]*')"
+    done
+    echo $ip 
+}
+
 # Create a lxc container from ubuntu template and install docker in it
 function create_container()
 {
@@ -69,8 +79,14 @@ function install()
         fi
     done
         
-     for name in $MANAGER $WORKER1 $WORKER2; do
-        (lxc-start $name) &> /dev/null    
+    for name in $WORKER1 $WORKER2 $MANAGER; do
+        (lxc-start $name) &> /dev/null   
+    done
+    
+    echo "[*] Creating some sample files"
+    for name in $MANAGER $WORKER1 $WORKER2; do
+        ip="$(wait_for_ip $name)"
+        echo "Hello from $name at $ip!" > /var/lib/lxc/$name/rootfs/index.html
     done
 }
 

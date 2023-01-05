@@ -30,6 +30,8 @@
 Télécharger le script d'installation sur:
 \begin{bashWithOption}{minted options = {fontsize=\footnotesize}}
 wget https://raw.githubusercontent.com/Fenrisfulsur/docker-swarm/main/setup.sh     
+chmod u+x setup.sh
+sudo ./setup.sh install
 \end{bashWithOption}
 \end{frame}
 
@@ -83,7 +85,7 @@ sudo systemctl start docker
 \end{bashResized}
     \columnbreak
     
-Sur MacOS / Windows :
+Sur MacOS ou Windows :
 \begin{bashResized}{0.48}
 Installer Docker Desktop :
 https://www.docker.com/
@@ -171,6 +173,38 @@ docker run -it python
 \end{frame}
 
 \section{Démonstration}
+
+% docker service create --name my_web --replicas 3 --mount type=bind,source=/,target=/usr/share/nginx/html --publish 8080:80 nginx
+\begin{frame}[fragile]{Création du cluster}
+Se connecter sur \verb:docker-manager: puis lancer:
+\begin{bash}
+docker swarm init
+\end{bash}
+\end{frame}
+
+\begin{frame}[fragile]{Ajout des nodes}
+Se connecter sur \verb:docker-worker1: et \verb:docker-worker2: puis lancer:
+\begin{bash}
+docker swarm join --token <token> <manager ip>:2377
+\end{bash}
+\end{frame}
+
+\begin{frame}[fragile]{Création du service web}
+Se connecter sur \verb:docker-manager: puis lancer:
+\begin{bash}
+docker service create --name my_web --replicas 3 \
+    --mount type=bind,source=/,target=/usr/share/nginx/html \
+    --publish 8080:80 nginx
+\end{bash}
+\end{frame}
+
+\begin{frame}[fragile]{Tests}
+Depuis l'hôte:
+\begin{bash}
+for i in `seq 1 10`; do curl http://<any ip>:8080/index.html; done
+\end{bash}
+\end{frame}
+
 
 \section{Conclusion}
 
