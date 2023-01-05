@@ -1,0 +1,59 @@
+\begin{titlepage}
+
+\setupparacol
+\begin{paracol}{2}
+
+    \begin{tikzpicture}[remember picture,overlay]
+      \node [rectangle, fill=sidecolor, anchor=north,
+             minimum width=7.5cm, minimum height=\paperheight+3cm]
+                (box) at (0cm,5cm){};
+        \begin{scope}[xshift=0.6cm, yshift=0.0cm]
+            \draw (0,0) node {\includegraphics[width=6cm]{title/logo-title.png}};
+        \end{scope}
+    \end{tikzpicture}
+
+\switchcolumn
+
+    \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+    \quad\\ [5.5cm]
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{scope}[xshift=6.5cm, yshift=3.0cm]
+            \draw (0,0) node {\includegraphics[width=8cm]{img/docker.png}};
+        \end{scope}
+    \end{tikzpicture}
+
+    \begin{tikzpicture}[remember picture]
+        \node[inner sep=0pt, anchor=north] at (-16cm, -10cm) {
+        \begin{minipage}{12cm}
+        \begin{center}
+            \textsc{\large Département Informatique - Master Sécurité des 
+                Systèmes d'Informations}\\[0.5cm] 
+            \HRule \\[0.3cm]
+            \huge{ \bfseries \typeOfDoc}
+            \HRule \\[2.5cm]
+            \normalsize{\emph{Auteurs:}}\\
+            \textsc{\Large \authors}
+            \vspace{1cm}
+            
+            \normalsize{\emph{Encadrant:}}\\[0.3cm]
+            \textsc{\Large \client}\\[1.0cm]
+        \end{center}
+        \end{minipage}
+        };
+
+        % Your name, type of document and date. Change this.
+        \node[inner sep=0pt] at (-16cm, -25cm) {
+            \begin{minipage}{12cm}
+                \begin{center}
+                \textsc{\Large{
+                    \today
+                }}
+                \end{center}
+            \end{minipage}
+        };
+    \end{tikzpicture}
+
+\end{paracol}
+
+\end{titlepage}

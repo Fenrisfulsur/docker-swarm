@@ -1,0 +1,107 @@
+%\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings, minted, breakable, skins, hooks}
+
+% background color for code (similar to vim)
+\definecolor{backcolor}{HTML}{FAFAFA}
+\definecolor{monokaikeyword}{HTML}{64d5ec}
+
+\newcommand{\verbtitle}[1]{\vspace{0.05cm}{\small{\mintinline{c}{#1}}}}
+\newcommand{\speckey}[1]{\textcolor{monokaikeyword}{#1}}
+
+% set the size of the line numbers
+\renewcommand\theFancyVerbLine{\footnotesize\arabic{FancyVerbLine}}
+
+% default options for minted package
+\tcbset{
+    default minted options=
+    {
+        breaklines,
+        %escapeinside=??,
+        fontsize=\small,
+        tabsize=2, 
+    },
+}
+
+% newtcblisting options
+\newcommand{\newMintedEnv}[2]{
+    % begin{language}
+    \newtcblisting{#1}
+    {
+        listing only, 
+        colback=backcolor, 
+        colframe=black!75, 
+        breakable,  
+        listing engine=minted,
+        drop fuzzy shadow = gray,
+        width=\textwidth, 
+        sharp corners,
+        left=6mm,
+        enhanced,
+        minted language=#1, 
+        minted style=#2, 
+        fonttitle=\normalsize,
+        overlay={
+            \begin{tcbclipinterior}
+            \fill[gray!20!white] (frame.south west)
+                rectangle ([xshift=5mm]frame.north west);
+            \end{tcbclipinterior}
+        }
+    }
+    % \begin{languageWithTitle}{title}
+    \newtcblisting{#1WithTitle}[1]
+    {
+        listing only, 
+        colback=backcolor, 
+        colframe=black!75, 
+        breakable,  
+        listing engine=minted,
+        drop fuzzy shadow = gray,
+        width=\textwidth, 
+        sharp corners,
+        left=6mm,
+        enhanced,
+        minted language=#1, 
+        minted style=#2, 
+        fonttitle=\normalsize,
+        overlay={
+            \begin{tcbclipinterior}
+            \fill[gray!20!white] (frame.south west)
+                rectangle ([xshift=5mm]frame.north west);
+            \end{tcbclipinterior}
+        },
+        title=\texttt{##1}
+    }
+    % \begin{languageResized}{size} (0.1 <-> 0.9)
+    \newtcblisting{#1Resized}[1]
+    {
+        listing only, 
+        colback=backcolor, 
+        colframe=black!75, 
+        breakable,  
+        listing engine=minted,
+        drop fuzzy shadow = gray,
+        width=##1\textwidth, 
+        sharp corners,
+        left=6mm,
+        enhanced,
+        minted language=#1, 
+        minted style=#2, 
+        fonttitle=\normalsize,
+        overlay={
+            \begin{tcbclipinterior}
+            \fill[gray!20!white] (frame.south west)
+                rectangle ([xshift=5mm]frame.north west);
+            \end{tcbclipinterior}
+        }
+    }
+}
+
+% Define minted environnements
+\newMintedEnv{bash}{perldoc}
+\newMintedEnv{python}{perldoc}
+\newMintedEnv{java}{perldoc}
+\newMintedEnv{js}{perldoc}
+\newMintedEnv{html}{perldoc}
+\newMintedEnv{xml}{perldoc}
+\newMintedEnv{php}{perldoc}

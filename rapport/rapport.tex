@@ -1,0 +1,131 @@
+\documentclass[a4paper, twoside, 12pt]{report}
+
+%----------------------------------------------------------------------------------------
+%	Packages
+%----------------------------------------------------------------------------------------
+
+\usepackage[french]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{titlesec, blindtext, color}
+\usepackage[T1]{fontenc}
+\usepackage{lscape}
+\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+% make links clickable
+\usepackage{hyperref}
+% Multicolumns
+\usepackage{paracol}
+
+\newcommand{\paracolbackgroundoptions}{%
+% intentionally left blank
+}
+
+\newcommand{\setupparacol}{%
+\setlength{\columnsep}{2.5cm}%
+\columnratio{0.2}[0.8]%
+\hbadness5000%
+\paracolbackgroundoptions%
+
+\definecolor{sidecolor}{HTML}{121736}}
+
+\usepackage{code-package}
+
+% for the description 
+\usepackage{enumitem}
+\setlist[description]{
+    style=nextline,
+    labelwidth=0pt,
+    leftmargin=30pt,
+    parsep=3pt,
+    itemindent=\dimexpr-20pt-\labelsep\relax
+}
+
+% for the table
+\usepackage{multirow}
+\usepackage{array}
+
+\usepackage[ddmmyyyy]{datetime}
+
+% Sets page size and margins
+\usepackage[a4paper,top=4cm,bottom=2cm,left=2cm,
+	right=2cm,marginparwidth=1.75cm,headheight=2cm]{geometry}
+
+% for the bar with date on top of each page
+\usepackage{fancyhdr}
+
+%----------------------------------------------------------------------------------------
+%	Variables
+%----------------------------------------------------------------------------------------
+
+\newcommand\typeOfDoc{Clustering avec Docker Swarm}
+\newcommand\projectName{Administration et protocoles réseaux}
+\newcommand\titleOfDoc{\typeOfDoc \\ \hfill \\ \projectName}
+
+\newcommand\authors{
+    Sami Babigeon\\			
+    Louka Boivin\\
+}
+
+\newcommand\client{M. Ziadi}
+
+%--- Utils ---
+\newcommand{\jmp}{\vspace{\baselineskip}}
+
+%----------------------------------------------------------------------------------------
+%	Packages configuration
+%----------------------------------------------------------------------------------------
+
+% Fancyhdr
+
+% Redefine length
+\renewcommand{\headrulewidth}{0.5pt}
+\newlength{\oddmarginwidth}
+\setlength{\oddmarginwidth}{0.25in+\hoffset+\oddsidemargin}
+\newlength{\evenmarginwidth}
+\setlength{\evenmarginwidth}{\evensidemargin+0.25in}
+
+% Redefine the plain page style
+\fancypagestyle{plain}{%
+  \fancyhf{}% Clear header and footer
+	\lhead{\textbf{Master SSI} \\ \projectName \\ \typeOfDoc}
+	\rhead{\includegraphics[width=3.5cm]{title/logo.png}}
+	\fancyfoot[C]{\thepage}
+	% Set the head width to be almost the full page width
+	\fancyhfoffset[LO,RE]{\oddmarginwidth}
+	\fancyhfoffset[LE,RO]{\evenmarginwidth}
+}
+
+\pagestyle{plain}
+
+% Chapter
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+
+%----------------------------------------------------------------------------------------
+%	Start of document
+%----------------------------------------------------------------------------------------
+
+\title{\titleOfDoc}
+\author{\authors}
+
+\begin{document}
+% titlepage
+\input{title/title.tex}
+
+% TOC
+\begingroup
+    \hypersetup{hidelinks}
+    \tableofcontents
+\endgroup
+\newpage
+
+\input{main/main.tex}
+
+%\bibliographystyle{unsrt}
+%\bibliography{bibs/sample}
+%\addcontentsline{toc}{chapter}{Bibliographie}
+
+\end{document}
