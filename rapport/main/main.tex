@@ -240,8 +240,7 @@ docker-worker2 RUNNING 10.0.3.203, 172.17.0.1
 \begin{center}
     \emph{Les adresses \verb:172.17.0.1: correspondent à l'interface docker0}
 \end{center}
-\jmp
-
+%\jmp
 On commence donc par créer un \verb:swarm: depuis le conteneur du manager:
 \begin{bash}
 docker swarm init
@@ -274,7 +273,9 @@ le cas d'un service web dont on souhaite répartir la charge sur les 3 conteneur
 utiliser le serveur web \verb:nginx:. On lance la commande suivante depuis le manager 
 pour créer un service web répartis entre les conteneurs:
 \begin{bash}
-docker service create --name my_web --replicas 3 --publish 8080:80 nginx
+docker service create --name my_web --replicas 3 \
+    --mount type=bind,source=/,target=/usr/share/nginx/html \
+    --publish 8080:80 nginx
 \end{bash}
 \begin{itemize}
     \item \verb:--name:: permet d'indiquer le nom de ce service.
@@ -282,6 +283,9 @@ docker service create --name my_web --replicas 3 --publish 8080:80 nginx
         attribuer cette tâche, ici 3.
     \item \verb:--publish:: permet d'indiquer que l'on souhaite rediriger tous le traffic 
         entrant sur le port 8080 du conteneur lxc sur le port 80 du service docker.  
+    \item \verb:--mount:: permet de monter la racine du système hôte sur le conteneur
+        docker, ce montage est effectuer sur l'ensemble des nœuds auquel cette tâche 
+        est attribué.
 \end{itemize}
 Il est important de noter que l'option \verb:--publish: en plus de faire la redirection,
 active le mode \verb:routing mesh:. Ce mode permet de faire de l'équilibrage de charge de
@@ -312,7 +316,28 @@ Il est possible de se connecter sur l'une des interfaces web en allant par exemp
 
 \section{Performances}
 
-
+Le mode swarm de docker intègre un système de gestion de charges, on peut 
+constater la présence de ce mécanisme en créant 3 fichiers \verb:index.html:
+à la racine de chaque conteneur lxc. Dans chaque fichier on écrit le contenu
+suivant:
+\begin{bash}
+Hello from <nom du conteneur lxc> at <ip du conteneur lxc>!
+\end{bash}
+Lors de la création du service (voir plus haut) on a ajouter l'option \verb:--mount:,
+afin de faire correspondre le répertoire \verb:/usr/share/nginx/html: sur le conteneur
+nginx à la racine du conteneur lxc. Par conséquent il est possible d'accèder à 
+\verb:index.html: via une requête HTTP comme ceci:
+\begin{bash}
+for i in `seq 1 5`; do curl http://10.0.3.111:8080/index.html; done
+Hello from docker-manager at 10.0.3.111!
+Hello from docker-worker2 at 10.0.3.203!
+Hello from docker-worker1 at 10.0.3.235!
+Hello from docker-manager at 10.0.3.111!
+Hello from docker-worker2 at 10.0.3.203!
+\end{bash}
+On remarque que le contenu de la page n'est pas toujours le même alors que l'on effectue
+la même requête, cela prouve que docker met en place un système d'équilibrage de charge
+afin de répartir les requêtes sur l'ensemble des nœuds du cluster.
 
 \section{Sécurité}
 
@@ -349,8 +374,6 @@ docker swarm init --autolock
 \begin{bashWithTitle}{Sur un cluster existant :}
 docker swarm update --autolock=true
 \end{bashWithTitle}
-\newpage
-
 Ces commandes vont nous renvoyer une clé de la forme :
 \begin{bash}
 SWMKEY-1-WuYH/IX284+lRcXuoVf38viIDK3HJEKY13MIHX+tTt8    # Exemple
