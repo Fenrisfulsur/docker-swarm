@@ -149,7 +149,46 @@ Docker Swarm présente plusieurs avantages :
 
 \section{Linux}
 
+Swarm est intégré à Docker par défaut, il suffit donc d'installer le Docker Engine.
+Sous Linux, l'installation est très simple et se résume au téléchargement des paquets suivants :
+
+\begin{bashWithTitle}{Ubuntu / Debian}
+sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+\end{bashWithTitle}
+
+\begin{bashWithTitle}{CentOS}
+sudo yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+\end{bashWithTitle}
+
+\begin{bashWithTitle}{Fedora}
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+\end{bashWithTitle}
+
+\begin{bashWithTitle}{Arch Linux}
+sudo pacman -S docker docker-compose
+\end{bashWithTitle}
+
+\emph{Source} :
+\href{https://docs.docker.com/engine/install/}{https://docs.docker.com/engine/install/}
+
 \section{Windows \& MacOS}
+
+Sur Windows et MacOS l'installation est différente car Docker est basé sur les conteneurs LXC.
+Il faut donc l'installer sur une machine virtuelle Linux, ou bien installer \emph{Docker Desktop}
+qui est une application de bureau fournissant une VM légère intégré. Elle permet donc de créer
+et d'utiliser les conteneurs Docker sous Windows et MacOS.\newline
+
+Pour installer cette application il suffit de télécharger l'installeur correspondant sur le site
+de Docker : \href{https://www.docker.com/products/docker-desktop/}{https://www.docker.com/products/docker-desktop/}.
+
+\begin{itemize}
+    \item[•] Windows : \verb:Docker Desktop Installer.exe:
+    \item[•] MacOS : \verb:Docker.dmg:
+\end{itemize}
+
+Cette application possède plus de fonctionnalités que l'interface en ligne de commande, et est plus
+simple à utiliser pour un utilisateur novice, il est donc aussi possible de l'installer sur Linux
+si l'on souhaite.
 
 \chapter{Utilisation}
 
@@ -179,8 +218,8 @@ docker-worker2 RUNNING 10.0.3.203, 172.17.0.1
 \begin{center}
     \emph{Les adresses \verb:172.17.0.1: correspondent à l'interface docker0}
 \end{center}
+\jmp
 
-\newpage
 On commence donc par créer un \verb:swarm: depuis le conteneur du manager:
 \begin{bash}
 docker swarm init
@@ -225,9 +264,7 @@ docker service create --name my_web --replicas 3 --publish 8080:80 nginx
 Il est important de noter que l'option \verb:--publish: en plus de faire la redirection,
 active le mode \verb:routing mesh:. Ce mode permet de faire de l'équilibrage de charge de
 manière transparente pour le client, en effet une requête effectué sur un nœud de l'essaim 
-peut être traité par un autre nœud si le premier nœud est indisponible. 
-
-\newpage
+peut être traité par un autre nœud si le premier nœud est indisponible.\newline 
 
 Pour l'instant on peut vérifier que le service \verb:my_web: fonctionne sur l'ensemble des
 nœuds de l'essaim, pour cela on utilise la commande suivante:
@@ -238,11 +275,14 @@ ID           NAME     IMAGE        NODE           DESIRED STATE
 wbh4bodsezqa my_web.2 nginx:latest docker-worker1 Running      
 ou5pyyrpr6k1 my_web.3 nginx:latest docker-worker2 Running       
 \end{bash}
+\newpage
+
 Il est possible de se connecter sur l'une des interfaces web en allant par exemple sur 
 \url{http://10.0.3.111:8080/}
+
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=15cm]{img/nginx}
+    \includegraphics[width=\textwidth]{img/nginx}
     \caption{Page par défault de nginx}
 \end{figure}
 
