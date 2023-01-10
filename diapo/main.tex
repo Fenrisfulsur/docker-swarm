@@ -80,8 +80,8 @@ sudo ./setup.sh install
     \begin{multicols}{2}
 Sur une machine Ubuntu :
 \begin{bashResized}{0.48}
-sudo apt install docker
-sudo systemctl start docker
+sudo apt install docker-ce\
+ docker-ce-cli containerd.io
 \end{bashResized}
     \columnbreak
     
@@ -157,7 +157,7 @@ docker run -it python
 \begin{frame}{Pourquoi utiliser Swarm ?}
     \begin{multicols}{2}
         \begin{itemize}
-            \item Scalabilité
+            \item Évolutivité
             \item Équilibrage de charges automatique
             \item Retour à l'état souhaité
             \item Mise en réseau multi-hôtes
@@ -170,6 +170,14 @@ docker run -it python
             \includegraphics[width=0.24\textwidth]{img/load-balancing}
         \end{figure}
     \end{multicols}
+\end{frame}
+
+\begin{frame}{Sécurité}
+TLS - PKI - CA externe
+
+Logs du Raft Consensus chiffrés
+
+Utilisation de la fonctionnalité d'\verb:autolock:
 \end{frame}
 
 \section{Démonstration}
@@ -185,6 +193,11 @@ docker swarm init
 Se connecter sur \verb:docker-worker1: et \verb:docker-worker2: puis lancer:
 \begin{bash}
 docker swarm join --token <token> <manager ip>:2377
+\end{bash}
+
+On peut voir l'état du cluster avec :
+\begin{bash}
+docker node ls
 \end{bash}
 \end{frame}
 
@@ -204,6 +217,41 @@ for i in `seq 1 10`; do curl http://<any ip>:8080/index.html; done
 \end{bash}
 \end{frame}
 
+\begin{frame}{Équilibrage de charge}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{img/routing-mesh}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Disponibilité}
+Depuis l'hôte :
+\begin{bash}
+sudo lxc-stop docker-worker2
+\end{bash}
+
+Ensuite, depuis \verb:docker-manager: :
+\begin{bash}
+docker service ps my_web
+\end{bash}
+\end{frame}
+
+\begin{frame}[fragile]{Sécurité - \texttt{autolock}}
+Depuis le \verb:docker-manager: :
+\begin{bash}
+docker swarm update --autolock=true
+\end{bash}
+
+On redémarre Docker et on inspecte le service:
+\begin{bash}
+sudo systemctl restart docker; docker service ls
+\end{bash}
+
+On peut ensuite déverrouiller le cluster avec :
+\begin{bash}
+docker swarm unlock
+\end{bash}
+\end{frame}
 
 \section{Conclusion}
 
