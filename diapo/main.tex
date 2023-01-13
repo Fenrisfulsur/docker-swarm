@@ -173,11 +173,26 @@ docker run -it python
 \end{frame}
 
 \begin{frame}{Sécurité}
-TLS - PKI - CA externe
 
-Logs du Raft Consensus chiffrés
+\begin{multicols}{2}
 
-Utilisation de la fonctionnalité d'\verb:autolock:
+\begin{itemize}
+    \item TLS
+
+    \item Logs du Raft Consensus chiffrés
+
+    \item Utilisation de la fonctionnalité d'\verb:autolock:
+\end{itemize}
+
+\columnbreak
+
+\begin{figure}
+    \centering
+    \includegraphics[width=4cm]{img/lock}
+\end{figure}
+
+\end{multicols}
+
 \end{frame}
 
 \section{Démonstration}
@@ -244,7 +259,7 @@ docker swarm update --autolock=true
 
 On redémarre Docker et on inspecte le service:
 \begin{bash}
-sudo systemctl restart docker; docker service ls
+sudo systemctl restart docker; docker service ps my_web
 \end{bash}
 
 On peut ensuite déverrouiller le cluster avec :
